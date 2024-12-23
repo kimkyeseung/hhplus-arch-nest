@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
 import { LectureService } from '../../application/lecture/lecture.service';
 
 @Controller('lectures')
@@ -40,5 +40,13 @@ export class LectureController {
     const { userId } = registerDto;
     await this.lectureService.registerParticipant(+lectureId, userId);
     return { message: 'Participant registered successfully' };
+  }
+
+  @Get('available')
+  async getAvailableLectures(@Query('date') date: string) {
+    if (!date) {
+      throw new Error('Date query parameter is required');
+    }
+    return this.lectureService.getAvailableLectures(new Date(date));
   }
 }

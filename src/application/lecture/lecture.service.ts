@@ -51,4 +51,9 @@ export class LectureService {
       await this.lectureRepository.save(lecture);
     });
   }
+
+  async getAvailableLectures(date: Date): Promise<Lecture[]> {
+    const lectures = await this.getLecturesByDate(date);
+    return lectures.filter((lecture) => !lecture.isFull());
+  }
 }
