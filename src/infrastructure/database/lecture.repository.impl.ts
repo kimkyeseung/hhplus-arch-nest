@@ -23,4 +23,8 @@ export class LectureRepositoryImpl implements LectureRepository {
         l.date.toISOString().slice(0, 10) === date.toISOString().slice(0, 10),
     );
   }
+
+  async findAll(): Promise<Lecture[]> {
+    return this.lectures;
+  }
 }

@@ -56,4 +56,9 @@ export class LectureService {
     const lectures = await this.getLecturesByDate(date);
     return lectures.filter((lecture) => !lecture.isFull());
   }
+
+  async getCompletedLectures(userId: number): Promise<Lecture[]> {
+    const lectures = await this.lectureRepository.findAll();
+    return lectures.filter((lecture) => lecture.participants.includes(userId));
+  }
 }

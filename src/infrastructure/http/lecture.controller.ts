@@ -49,4 +49,12 @@ export class LectureController {
     }
     return this.lectureService.getAvailableLectures(new Date(date));
   }
+
+  @Get('completed')
+  async getCompletedLectures(@Query('userId') userId: string) {
+    if (!userId) {
+      throw new Error('UserId query parameter is required');
+    }
+    return this.lectureService.getCompletedLectures(+userId);
+  }
 }
