@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Param, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  Query,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { LectureService } from '../../application/lecture/lecture.service';
 
 @Controller('lectures')
@@ -25,7 +34,10 @@ export class LectureController {
   @Get('available')
   async getAvailableLectures(@Query('date') date: string) {
     if (!date) {
-      throw new Error('Date query parameter is required');
+      throw new HttpException(
+        'Date query parameter is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.lectureService.getAvailableLectures(new Date(date));
   }
@@ -33,7 +45,10 @@ export class LectureController {
   @Get('completed')
   async getCompletedLectures(@Query('userId') userId: string) {
     if (!userId) {
-      throw new Error('UserId query parameter is required');
+      throw new HttpException(
+        'UserId query parameter is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return this.lectureService.getCompletedLectures(+userId);
   }
@@ -54,7 +69,21 @@ export class LectureController {
     @Body() registerDto: { userId: number },
   ) {
     const { userId } = registerDto;
-    await this.lectureService.registerParticipant(+lectureId, userId);
-    return { message: 'Participant registered successfully' };
+    try {
+      await this.lectureService.registerParticipant(+lectureId, userId);
+      return {
+        message: 'Participant registered successfully',
+        lectureId,
+        userId,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: error.message,
+          lectureId: +lectureId,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
