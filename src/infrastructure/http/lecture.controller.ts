@@ -22,6 +22,22 @@ export class LectureController {
     );
   }
 
+  @Get('available')
+  async getAvailableLectures(@Query('date') date: string) {
+    if (!date) {
+      throw new Error('Date query parameter is required');
+    }
+    return this.lectureService.getAvailableLectures(new Date(date));
+  }
+
+  @Get('completed')
+  async getCompletedLectures(@Query('userId') userId: string) {
+    if (!userId) {
+      throw new Error('UserId query parameter is required');
+    }
+    return this.lectureService.getCompletedLectures(+userId);
+  }
+
   @Get(':id')
   async getLectureById(@Param('id') id: string) {
     return this.lectureService.getLectureById(+id);
@@ -40,21 +56,5 @@ export class LectureController {
     const { userId } = registerDto;
     await this.lectureService.registerParticipant(+lectureId, userId);
     return { message: 'Participant registered successfully' };
-  }
-
-  @Get('available')
-  async getAvailableLectures(@Query('date') date: string) {
-    if (!date) {
-      throw new Error('Date query parameter is required');
-    }
-    return this.lectureService.getAvailableLectures(new Date(date));
-  }
-
-  @Get('completed')
-  async getCompletedLectures(@Query('userId') userId: string) {
-    if (!userId) {
-      throw new Error('UserId query parameter is required');
-    }
-    return this.lectureService.getCompletedLectures(+userId);
   }
 }
