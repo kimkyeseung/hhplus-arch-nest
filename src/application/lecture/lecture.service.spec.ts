@@ -12,6 +12,7 @@ describe('LectureService', () => {
     mockLectureRepository = {
       findByDate: jest.fn(),
       findById: jest.fn(),
+      findAll: jest.fn(),
       save: jest.fn(),
     };
 
@@ -63,6 +64,65 @@ describe('LectureService', () => {
       const availableLectures = await service.getAvailableLectures(mockDate);
 
       expect(availableLectures.length).toBe(0);
+    });
+  });
+
+  describe('getCompletedLectures', () => {
+    it('should return lectures completed by the user', async () => {
+      const mockUserId = 1;
+      const mockLectures = [
+        new Lecture(
+          1,
+          'Lecture 1',
+          'Instructor 1',
+          new Date('2024-12-30'),
+          [1, 2],
+        ),
+        new Lecture(
+          2,
+          'Lecture 2',
+          'Instructor 2',
+          new Date('2024-12-29'),
+          [3, 4],
+        ),
+      ];
+
+      jest
+        .spyOn(mockLectureRepository, 'findAll')
+        .mockResolvedValue(mockLectures);
+
+      const completedLectures = await service.getCompletedLectures(mockUserId);
+
+      expect(completedLectures.length).toBe(1);
+      expect(completedLectures[0].title).toBe('Lecture 1');
+    });
+
+    it('should return an empty array if the user has not completed any lectures', async () => {
+      const mockUserId = 5;
+      const mockLectures = [
+        new Lecture(
+          1,
+          'Lecture 1',
+          'Instructor 1',
+          new Date('2024-12-30'),
+          [1, 2],
+        ),
+        new Lecture(
+          2,
+          'Lecture 2',
+          'Instructor 2',
+          new Date('2024-12-29'),
+          [3, 4],
+        ),
+      ];
+
+      jest
+        .spyOn(mockLectureRepository, 'findAll')
+        .mockResolvedValue(mockLectures);
+
+      const completedLectures = await service.getCompletedLectures(mockUserId);
+
+      expect(completedLectures.length).toBe(0);
     });
   });
 });
