@@ -2,13 +2,15 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../app.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmTestConfig } from '../../src/infrastructure/config/typeorm.config';
 
 describe('Lecture Registration Concurrency', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, TypeOrmModule.forRoot(typeOrmTestConfig)],
     }).compile();
 
     app = moduleFixture.createNestApplication();
