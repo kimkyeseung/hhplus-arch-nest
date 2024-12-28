@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: lecture_service_db
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lecture_service
+      MYSQL_USER: lecture_user
+      MYSQL_PASSWORD: lecture_password
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
