@@ -52,4 +52,47 @@ describe('Lecture Registration Concurrency', () => {
     expect(successes).toBe(30); // Only 30 should succeed
     expect(failures).toBe(10); // Remaining should fail
   });
+
+  describe('Lecture Integration Tests - Duplicate Registration', () => {
+    it('should allow only one registration per user for the same lecture', async () => {
+      const lecture = {
+        title: 'Concurrent Lecture',
+        instructorName: 'Test Instructor',
+        date: '2024-12-31',
+      };
+
+      // Create a lecture
+      const { body: createdLecture } = await request(app.getHttpServer())
+        .post('/lectures')
+        .send(lecture)
+        .expect(201);
+
+      const lectureId = createdLecture.id;
+      const userId = 1;
+
+      // First attemption should be success
+      const firstResponse = await request(app.getHttpServer())
+        .post(`/lectures/${lectureId}/register`)
+        .send({ userId });
+
+      expect(firstResponse.status).toBe(201);
+      expect(firstResponse.body).toHaveProperty(
+        'message',
+        'Participant registered successfully',
+      );
+
+      // Apply 4 more times with the same user: All should fail
+      for (let i = 0; i < 4; i++) {
+        const duplicateResponse = await request(app.getHttpServer())
+          .post(`/lectures/${lectureId}/register`)
+          .send({ userId });
+
+        expect(duplicateResponse.status).toBe(400);
+        expect(duplicateResponse.body).toHaveProperty(
+          'message',
+          'User is already registered for this lecture',
+        );
+      }
+    });
+  });
 });
